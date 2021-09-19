@@ -6,3 +6,12 @@ print(generate_squares(5))
 ```
 """
 
+def generate_squares(num:int):
+    d = {}
+    
+    for i in range(1,num+1):
+        d[i] = i**2
+    
+    return d
+
+print(generate_squares(5))
