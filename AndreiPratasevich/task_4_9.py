@@ -28,7 +28,7 @@ print(test_1_4(*strings))
 def test_1_1 (*args):
     # create dict with letters for each string in args
     chars =[]
-    for index, item in enumerate(args):
+    for item in args:
         d = {}
         for char in item:
             d[char] = d.get(char, 0) + 1
@@ -51,8 +51,24 @@ def test_1_1 (*args):
 
     return out
 
+def test_1_2(*args):
+    # create dict with letters for each string in args
+    chars =[]
+    for item in args:
+        d = {}
+        for char in item:
+            d[char] = d.get(char, 0) + 1
+        chars.append(d)
 
+    # common chars
+    common_chars = set()
+    for val in chars:
+        for key in val.keys():
+            common_chars.add(key)
+    
+    return common_chars
 
 
 test_strings = ["hello", "world", "python", ]
 print(test_1_1(*test_strings))
+print(test_1_2(*test_strings))
