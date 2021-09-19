@@ -25,6 +25,8 @@ print(test_1_4(*strings))
 ```
 """
 
+import string
+
 def test_1_1 (*args):
     # create dict with letters for each string in args
     chars =[]
@@ -94,8 +96,33 @@ def test_1_3(*args):
 
     return out
 
+def test_1_4(*args):
+    alphabet = list(string.ascii_lowercase)
+    # create dict with letters for each string in args
+    chars =[]
+    for item in args:
+        d = {}
+        for char in item:
+            d[char] = d.get(char, 0) + 1
+        chars.append(d)
+
+    # common chars
+    common_chars = set()
+    for val in chars:
+        for key in val.keys():
+            common_chars.add(key)
+    
+    not_in_common = set()
+    for letter in alphabet:
+        if letter not in common_chars:
+            not_in_common.add(letter)
+
+    return not_in_common
+
 
 test_strings = ["hello", "world", "python", ]
 print(test_1_1(*test_strings))
 print(test_1_2(*test_strings))
 print(test_1_3(*test_strings))
+print(test_1_4(*test_strings))
+print(len(test_1_4(*test_strings)), '=', len({'a', 'b', 'c', 'f', 'g', 'i', 'j', 'k', 'm', 'q', 's', 'u', 'v', 'x', 'z'}))
