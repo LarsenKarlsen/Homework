@@ -24,3 +24,35 @@ print(test_1_4(*strings))
 >>> {'a', 'b', 'c', 'f', 'g', 'i', 'j', 'k', 'm', 'q', 's', 'u', 'v', 'x', 'z'}
 ```
 """
+
+def test_1_1 (*args):
+    # create dict with letters for each string in args
+    chars =[]
+    for index, item in enumerate(args):
+        d = {}
+        for char in item:
+            d[char] = d.get(char, 0) + 1
+        chars.append(d)
+
+    # common chars
+    common_chars = set()
+    for val in chars:
+        for key in val.keys():
+            common_chars.add(key)
+    # iterate throught common chars to find if it exists in all words
+    out = set()
+    for letter in common_chars:
+        status = True
+        for char in chars:
+            if letter not in char.keys():
+                status = False
+        if status:
+            out.add(letter)
+
+    return out
+
+
+
+
+test_strings = ["hello", "world", "python", ]
+print(test_1_1(*test_strings))
