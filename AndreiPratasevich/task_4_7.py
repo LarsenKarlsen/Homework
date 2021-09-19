@@ -11,3 +11,19 @@ Example:
 [2, 3, 6]
 ```
 """
+
+def foo(arr):
+    out = []
+
+    for i in range(len(arr)):
+        arr_to_mul = [*arr]
+        arr_to_mul.pop(i)
+        prod = 1
+        for num in arr_to_mul:
+            prod *= num
+        out.append(prod)
+    
+    return out
+
+print(foo([1, 2, 3, 4, 5]))
+print(foo([3, 2, 1]))
