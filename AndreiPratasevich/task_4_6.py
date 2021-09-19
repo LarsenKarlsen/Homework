@@ -13,3 +13,13 @@ Example:
 'pythonista'
 ```
 """
+
+def get_shortest_word(s:str):
+    words = s.split()
+    # if symbols like , ? ! and so on is valid parts of words
+    return max(words, key=len)
+
+tests = ['Python is simple and effective!', 'Any pythonista like namespaces a lot.']
+
+for test in tests:
+    print(get_shortest_word(test))
