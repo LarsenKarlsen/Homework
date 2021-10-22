@@ -4,7 +4,7 @@ from datetime import date, datetime
 import requests
 import json
 from bs4 import BeautifulSoup
-from .logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
+from logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
 from os import path
 
 class RssParser:
@@ -223,6 +223,9 @@ class RssParser:
         feed = json.dumps(self.feed[:limit]) # convert python list of d in JSON
         print(json.dumps(json.load(feed), indent=4, sort_keys=True)) # print etire JSON in console
 
+class Converter:
+    def __init__(self) -> None:
+        pass
 # for test only
 # kwargs = {
 #     'sourse': None,#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science','https://news.yahoo.com/rss', 'https://www.onliner.by/feed'

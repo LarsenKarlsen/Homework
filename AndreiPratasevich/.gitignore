@@ -1,5 +1,4 @@
-env
-rss_reader/__pycache__
-test
+env/
+test/
 rss_reader/dist
-rss_reader/rss_reader.egg-info
+rss_reader/__pycache__/
