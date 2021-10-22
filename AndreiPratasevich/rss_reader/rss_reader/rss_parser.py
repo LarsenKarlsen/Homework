@@ -3,9 +3,11 @@
 from datetime import date, datetime
 import requests
 import json
+from unidecode import unidecode
 from bs4 import BeautifulSoup
+from fpdf import FPDF
 from logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
-from os import path
+from os import path,remove
 
 class RssParser:
     """
@@ -23,6 +25,7 @@ class RssParser:
         self.feed = None # for news
         self._make_local_storage()
         self.local_data = self._read_local_storage()
+        # create feed
         if kwargs['filter_date']:
             self.feed = self._local_feed(sourse=kwargs['sourse'], filter_date=kwargs['filter_date']) # get local_feed
             self.channel = ''
@@ -32,7 +35,7 @@ class RssParser:
             self.feed = self._parse() # list of dicts with rss news (items) after parsing
             self._save_feed(kwargs['sourse'])
         
-        self.print_feed()
+        #self.print_feed()
 
 
     def _local_feed(self,sourse = None, filter_date = None):
@@ -142,7 +145,6 @@ class RssParser:
         except Exception as e:
             print('Error fetching the URL: ', url) # print error if cant fetch data from RSS FEED
             print(e)
-        
         try:
             soup = BeautifulSoup(resp.content, features='lxml', from_encoding='utf-8') # try to convert pure XML to SOUB object (raw data)
         except Exception as e:
@@ -210,7 +212,7 @@ class RssParser:
                 print(f'Link:  ', article['link'],'\n')
                 if article['description'] != None:
                     print('Description:', article['description'],'\n')
-        print(f'In feed - {len(self.feed)} article(s)')
+        print(f'In feed - {len(self.feed[:limit])} article(s)')
     
     def to_json(self):
         '''
@@ -222,15 +224,53 @@ class RssParser:
 
         feed = json.dumps(self.feed[:limit]) # convert python list of d in JSON
         print(json.dumps(json.load(feed), indent=4, sort_keys=True)) # print etire JSON in console
+    
+    def to_pdf(self,path=None):
+        limit = self.limit # set up limit
+        if (limit == None or limit>len(self.feed) or limit < 1): # checked conditions when user will see ALL feed / MB add limit argument check in RssReader MOdule?
+            limit = len(self.feed)
+        
+        text = ''
+        
+        if self.channel:
+            text += f'{self.channel} \n\n' # channel name
+        if len(self.feed)==0: # check if feed no empty
+            print('No articles')
+        
+        for article in self.feed[:limit]:
+            text += f"Title: {article['title']}\nDate: {article['pubDate']}\nLink: {article['link']}\n"
+            if article['description']:
+                text += f"Description: {article['description']}"
+            text +=f'\n'
+        
+        text = unidecode(text)
+        
+        # with open('./buffer.txt', mode='w') as txt:
+        #     txt.write(text)
+        
+        pdf = FPDF()
 
-class Converter:
-    def __init__(self) -> None:
-        pass
+        pdf.add_page() 
+
+        pdf.set_font("Arial", size = 12) 
+        pdf.multi_cell(200, 10, txt = text,) 
+        # with open('./buffer.txt', mode='r', encoding='utf-8') as f:
+        #     for text in f: 
+        #         pdf.multi_cell(200, 10, txt = text,) 
+        if path:
+            pdf.output(path)
+        else:
+            pdf.output('feed.pdf')
+        
+        # remove('./buffer.txt')
+        
 # for test only
-# kwargs = {
-#     'sourse': None,#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science','https://news.yahoo.com/rss', 'https://www.onliner.by/feed'
-#     'filter_date': '20211013',
-#     'limit': None,
-#     'verbose': False,
-# }
-# parser = RssParser(**kwargs)
+kwargs = {
+    'sourse': 'https://news.yahoo.com/rss',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science','https://www.onliner.by/feed'
+    'filter_date': None,
+    'limit': None,
+    'verbose': False,
+}
+parser = RssParser(**kwargs)
+parser.to_pdf()
+
