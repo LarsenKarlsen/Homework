@@ -1,6 +1,6 @@
 # https://news.yahoo.com/rss
 import argparse
-from rss_parser import RssParser
+from .rss_parser import RssParser
 
 class RSSReader:
     """

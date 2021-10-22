@@ -4,7 +4,7 @@ from datetime import date, datetime
 import requests
 import json
 from bs4 import BeautifulSoup
-from logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
+from .logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
 from os import path
 
 class RssParser:

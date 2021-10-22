@@ -1,4 +1,4 @@
-from rss_reader import RSSReader
+from .rss_reader import RSSReader
 
 def main():
     RSSReader()
