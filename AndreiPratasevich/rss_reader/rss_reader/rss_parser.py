@@ -303,13 +303,13 @@ class RssParser:
 
 
         
-# for test only
-kwargs = {
-    'sourse': 'https://news.yahoo.com/rss',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science','https://www.onliner.by/feed'
-    'filter_date': None,
-    'limit': None,
-    'verbose': False,
-}
-parser = RssParser(**kwargs)
-parser.to_html()
+# # for test only
+# kwargs = {
+#     'sourse': 'https://news.yahoo.com/rss',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science',#'https://news.yahoo.com/rss/science','https://www.onliner.by/feed'
+#     'filter_date': None,
+#     'limit': None,
+#     'verbose': False,
+# }
+# parser = RssParser(**kwargs)
+# parser.to_html()
 
