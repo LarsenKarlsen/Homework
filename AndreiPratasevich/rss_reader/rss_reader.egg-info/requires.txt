@@ -1,8 +1,0 @@
-requests
-bs4
-argparse
-fpdf
-lxml
-
-[:python_version == "3.8.10"]
-importlib

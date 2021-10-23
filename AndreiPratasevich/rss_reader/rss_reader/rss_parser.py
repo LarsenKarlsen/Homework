@@ -7,7 +7,7 @@ from unidecode import unidecode
 from bs4 import BeautifulSoup
 from fpdf import FPDF
 from logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
-from os import path,remove
+from os import link, path,remove
 
 class RssParser:
     """
@@ -226,6 +226,9 @@ class RssParser:
         print(json.dumps(json.load(feed), indent=4, sort_keys=True)) # print etire JSON in console
     
     def to_pdf(self,path=None):
+        """
+        Method. Turns feed into pdf format.
+        """
         limit = self.limit # set up limit
         if (limit == None or limit>len(self.feed) or limit < 1): # checked conditions when user will see ALL feed / MB add limit argument check in RssReader MOdule?
             limit = len(self.feed)
@@ -243,10 +246,7 @@ class RssParser:
                 text += f"Description: {article['description']}"
             text +=f'\n'
         
-        text = unidecode(text)
-        
-        # with open('./buffer.txt', mode='w') as txt:
-        #     txt.write(text)
+        text = unidecode(text) # turns utf-8 into latin-1
         
         pdf = FPDF()
 
@@ -254,15 +254,54 @@ class RssParser:
 
         pdf.set_font("Arial", size = 12) 
         pdf.multi_cell(200, 10, txt = text,) 
-        # with open('./buffer.txt', mode='r', encoding='utf-8') as f:
-        #     for text in f: 
-        #         pdf.multi_cell(200, 10, txt = text,) 
+
         if path:
             pdf.output(path)
         else:
             pdf.output('feed.pdf')
+    
+    def to_html(self):
+        """
+        Method turns feed into html
+        """
+        limit = self.limit # set up limit
+        if (limit == None or limit>len(self.feed) or limit < 1): # checked conditions when user will see ALL feed / MB add limit argument check in RssReader MOdule?
+            limit = len(self.feed)
         
-        # remove('./buffer.txt')
+        text = ''
+        
+        if self.channel:
+            text += f'{self.channel} \n\n' # channel name
+        if len(self.feed)==0: # check if feed no empty
+            print('No articles')
+        
+        html = """
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+    <body>
+""" # text obj for html code
+        for article in self.feed[:limit]:
+            title_content = f"\t\t\t<h3>{article['title']}<h3>\n"
+            date_content = f"\t\t\t<p>PubDate: {article['pubDate']}</p>\n"
+            link_content = f"\t\t\t<a href='{article['link']}'>Source</a>\n"
+            descr_content = f"\t\t\t"
+            
+            article_content = '\t\t<div>\n'
+            article_content += title_content + date_content + link_content + descr_content + '</div>\n'
+            html += article_content
+        html +='    </body>\n</html>'
+
+        with open('./feed.html', 'w') as doc:
+            doc.write(html)
+
+
+
         
 # for test only
 kwargs = {
@@ -272,5 +311,5 @@ kwargs = {
     'verbose': False,
 }
 parser = RssParser(**kwargs)
-parser.to_pdf()
+parser.to_html()
 
