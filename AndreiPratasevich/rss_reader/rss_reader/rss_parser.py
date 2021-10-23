@@ -120,19 +120,22 @@ class RssParser:
             
         except:
             # add fresh news to local storage
-            print ('New sourse, add it to local storage')
+            if self.verbose:
+                print ('New sourse, add it to local storage')
             new_source_feed = {
                 'feed': self.feed,
                 'cached': date.today().strftime("%d/%m/%Y")
             }
 
             self.local_data[source] = new_source_feed
-            print('ADD NEW SOURSE TO LOCAL STORAGE')
+            if self.verbose:
+                print('ADD NEW SOURSE TO LOCAL STORAGE')
         
         with open(self.local_storage_path, mode='w') as outputfile:
             json.dump(self.local_data, outputfile)
         
-        print('WRITE LOCAL STORAGE SECCESSFUL')
+        if self.verbose:
+            print('WRITE LOCAL STORAGE SECCESSFUL')
 
     @get_rss_log 
     def _get_rss(self,url):
@@ -276,16 +279,16 @@ class RssParser:
             print('No articles')
         
         html = """
-<!DOCTYPE html>
-<html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
-    </head>
-    <body>
-""" # text obj for html code
+        <!DOCTYPE html>
+        <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <title>Document</title>
+            </head>
+            <body>
+        """ # text obj for html code
         for article in self.feed[:limit]:
             title_content = f"\t\t\t<h3>{article['title']}<h3>\n"
             date_content = f"\t\t\t<p>PubDate: {article['pubDate']}</p>\n"
