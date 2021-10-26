@@ -18,13 +18,20 @@ class RSSReader:
             print(self.version)
         else: # else normal flow 
             parser = RssParser(**vars(args))
+            parser.main()
 
-            if args.pdf == True: # if there is json flag, run RSSParser metod .to_pdf
+            if args.pdf == True: # if there is pdf flag, run RSSParser metod .to_pdf
                 parser.to_pdf()
-            elif args.html() == True: # if there is json flag, run RSSParser metod .to_html
+            elif args.html == True: # if there is html flag, run RSSParser metod .to_html
                 parser.to_html()
             elif args.json == True: # if there is json flag, run RSSParser metod .to_json
                 parser.to_json()
+            else:
+                try:
+                    parser.print_feed()
+                except:
+                    print('Something wrong. Cant parse feed in human readable format')
+            
 
 
 
@@ -35,7 +42,7 @@ class RSSReader:
         app.add_argument('--json',dest='json', help='Return feed in JSON format',action='store_true') # json flag
         app.add_argument('--verbose',dest='verbose', help='Outputs verbose status messages',action='store_true') # verbose mode flag
         app.add_argument('--limit',dest='limit', help='Limit news topics if this parameter provided', type=int) # rss feed length limit
-        app.add_argument('--date',dest='filter_date', default=None, help='Takes a date in `%Y%m%d` format, and filter local feed') # filter local feed
+        app.add_argument('--date',dest='filter_date', default=None, help='Takes a date in `YearMonthDay` format, and filter local feed') # filter local feed
         app.add_argument('--to_pdf',dest='pdf', default=False, help='Saving news feed in pdf format',action='store_true') # feed into pdf file
         app.add_argument('--to_html', dest='html', default=False, help='Saving news feed in html format',action='store_true') # feed into html file
     

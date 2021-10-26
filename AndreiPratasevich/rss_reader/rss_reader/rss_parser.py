@@ -3,11 +3,13 @@
 from datetime import date, datetime
 import requests
 import json
+import re
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from fpdf import FPDF
 from logs import get_rss_log, parse_log, feed_log, exec_time, time_converter # import decorators responsible for logs output
 from os import link, path,remove
+
 
 class RssParser:
     """
@@ -17,53 +19,70 @@ class RssParser:
     takes arguments from RSS reader class
     decorators above methods used for --verbose flag
     """
-    @exec_time
     def __init__(self,**kwargs):
         self.verbose = kwargs['verbose'] # verbose arg from RssReader class (RRC)
         self.limit = kwargs['limit'] # limit arg from
         self.local_storage_path = path.join(path.dirname(__file__), 'local_storage.json') # path to dir with rss_reader.py
         self.feed = None # for news
-        self._make_local_storage()
-        self.local_data = self._read_local_storage()
-        # create feed
-        if kwargs['filter_date']:
-            self.feed = self._local_feed(sourse=kwargs['sourse'], filter_date=kwargs['filter_date']) # get local_feed
-            self.channel = ''
-        else:
-            self.raw = self._get_rss(kwargs['sourse']) # connect to source URL, get XML content and returne SOUP obj
-            self.channel = self._get_channel() # RSS feed name
-            self.feed = self._parse() # list of dicts with rss news (items) after parsing
-            self._save_feed(kwargs['sourse'])
-        
-        #self.print_feed()
+        self.local_data = None
+        self.filter_date = kwargs['filter_date']
+        self.sourse = kwargs['sourse']
 
+    @exec_time
+    def main(self):
+        """
+        Main functionality method. Takes rss feed from URL or from
+        local storage and convert it to readable fromat.
+        """
+        try:
+            self._make_local_storage()
+        except Exception as e:
+            print('Cant create local storage file')
+        try:
+            self.local_data = self._read_local_storage()
+        except Exception as e:
+            print('Cant read news feed from local storage')
+        if self.filter_date:
+            try:
+                self.feed = self._local_feed(sourse=self.sourse, filter_date=self.filter_date) # get local_feed
+                self.channel = ''
+            except Exception as e:
+                print(f'Cant parse news from local storage.\n\n{e}\n')
+        else:
+            try:
+                self.raw = self._get_rss(self.sourse) # connect to source URL, get XML content and returne SOUP obj
+                self.channel = self._get_channel() # RSS feed name
+            except Exception:
+                print(f'Some trouble with connection to {self.sourse}')
+            try:
+                self.feed = self._parse() # list of dicts with rss news (items) after parsing
+                self._save_feed(self.sourse)
+            except Exception as e:
+                print(e)
+                print(f'Cant parse feed from {self.sourse}. Make sure its RSS format')
 
     def _local_feed(self,sourse = None, filter_date = None):
         """
         Method. Loads news feed from local storage
         """
-        try:
-            if sourse:
-                channel = sourse
-                feed = self.local_data[sourse]['feed']
-            else:
-                feed = []
-                channel = '\nAll news from:\n'
-                for key in self.local_data:
-                    channel += f'{key}\n'
-                    feed.extend(self.local_data[key]['feed'])
-            if filter_date:
-                filtered_feed = []
-                for index, article in enumerate(feed):
-                    if article['pubDate'] == filter_date:
-                        filtered_feed.append(feed.pop(index))
-                feed = filtered_feed
-            print(channel)
-            return feed
-        except Exception as e:
-            print('THERE IS PROBLEM')
-            print(e) # TODO more exceptions
-
+        if sourse:
+            channel = sourse
+            feed = self.local_data[sourse]['feed']
+        else:
+            feed = []
+            channel = '\nAll news from:\n'
+            for key in self.local_data:
+                channel += f'{key}\n'
+                feed.extend(self.local_data[key]['feed'])
+        
+        if filter_date:
+            filtered_feed = []
+            for index, article in enumerate(feed):
+                if article['pubDate'] == filter_date:
+                    filtered_feed.append(feed.pop(index))
+            
+            feed = filtered_feed
+        return feed
 
     def _make_local_storage(self):
         '''
@@ -143,16 +162,8 @@ class RssParser:
         Takes RSS feed url try to connect
         Return SOUP object with XML content (RSS FEED)
         '''
-        try:
-            resp = requests.get(url) # request to RSS URL
-        except Exception as e:
-            print('Error fetching the URL: ', url) # print error if cant fetch data from RSS FEED
-            print(e)
-        try:
-            soup = BeautifulSoup(resp.content, features='lxml', from_encoding='utf-8') # try to convert pure XML to SOUB object (raw data)
-        except Exception as e:
-            print('Could not parse XML at: ', url)
-            print(e)
+        resp = requests.get(url) # request to RSS URL
+        soup = BeautifulSoup(resp.content, features='lxml', from_encoding='utf-8') # try to convert pure XML to SOUB object (raw data)
         
         return soup
     
@@ -172,11 +183,19 @@ class RssParser:
         feed = [] # empty list for dict_article
         for item in items: 
             news_item = {} # dict_article
-            news_item['title'] = item.title.text # item tag content in <item>
+
+            title = item.title.text
+            title = title.replace('<![CDATA[', '')
+            title = title.replace(']]>','')
+            news_item['title'] =  title# item tag content in <item>
+            
             news_item['link'] = item.link.next_sibling # <link> content , dunno why item.link.text return 'empty_string' mb cuz <link\>
             # if descriprion tag exist take it else leave it None
             try:
-                news_item['description'] = item.description.text
+                description = item.description.text
+                description = description.replace('<![CDATA[', '')
+                description = description.replace(']]>','')
+                news_item['description'] = description
             except:
                 news_item['description'] = None
             

@@ -7,10 +7,13 @@ If so print verbose msges
 else return function
 '''
 from time import time
-from datetime import datetime  
+from datetime import date, datetime  
 
 def time_converter(str_time):
-    date = datetime.fromisoformat(str_time[:-1])
+    try:
+        date = datetime.fromisoformat(str_time[:-1])
+    except:
+        date = datetime.strptime(str_time[:-4], "%a, %d %b %Y %H:%M:%S") #"Fri, 22 Oct 2021 17:23:00 GMT")
 
     return date.strftime('%Y%m%d')
 
