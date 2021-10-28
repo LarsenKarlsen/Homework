@@ -27,7 +27,13 @@ python rss_reader -h
 
 The cashed news can be read with it. The new from the specified day will be printed out.
 If the news are not found return an error.
+## with intallation
+'''bash
+rss_reader.py [-h] [--version] [--json] [--verbose] [--limit LIMIT] [--to_pdf] [--to_html]
+                     source
 
+--to_pdf - makes pdf file with news feed in root dir
+--to_html - the same but makes html file
 ### Local storage
 News are stored in JSON file local_strage.json in rss_reader dir.
 structure:

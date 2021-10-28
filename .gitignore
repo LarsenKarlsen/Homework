@@ -3,5 +3,6 @@ test/
 rss_reader/dist
 __pycache__/
 rss_reader/feed.pdf
+rss_reader/.pytest_cache
 rss_reader/feed.html
 rss_reader/rss_reader/local_storage.json
