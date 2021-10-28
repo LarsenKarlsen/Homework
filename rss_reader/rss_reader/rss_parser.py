@@ -3,7 +3,6 @@
 from datetime import date, datetime
 import requests
 import json
-import re
 from unidecode import unidecode
 from bs4 import BeautifulSoup
 from fpdf import FPDF
@@ -282,7 +281,7 @@ class RssParser:
         else:
             pdf.output('feed.pdf')
     
-    def to_html(self):
+    def to_html(self, save_path='./feed.html'):
         """
         Method turns feed into html
         """
@@ -319,7 +318,10 @@ class RssParser:
             html += article_content
         html +='    </body>\n</html>'
 
-        with open('./feed.html', 'w') as doc:
+        if save_path:
+            path.join(save_path,'feed.html')
+
+        with open(save_path, 'w') as doc:
             doc.write(html)
 
 

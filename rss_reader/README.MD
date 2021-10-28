@@ -31,7 +31,7 @@ If the news are not found return an error.
 '''bash
 rss_reader.py [-h] [--version] [--json] [--verbose] [--limit LIMIT] [--to_pdf] [--to_html]
                      source
-
+'''
 --to_pdf - makes pdf file with news feed in root dir
 --to_html - the same but makes html file
 ### Local storage
