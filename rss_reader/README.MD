@@ -1,11 +1,11 @@
 # Rss-reader
 A simple commandline app for reading RSS feeds
 # Installation
-## Manual
+
 ```bash
   $ git clone REPONAME
-  $ cd rss-reader/dist
-  $ pip install rss_reader-1.4.tar.gz
+  $ cd rss-reader
+  $ pip install .
 ```
 # Usage
 
@@ -27,3 +27,11 @@ python rss_reader -h
 
 The cashed news can be read with it. The new from the specified day will be printed out.
 If the news are not found return an error.
+
+### Local storage
+News are stored in JSON file local_strage.json in rss_reader dir.
+structure:
+'RSS feed URL' : {'feed':[{news feed files}], 'cashed':'date of last update'}
+
+when you run programm its looks in root dir for local_starage.json, if it exists then programm loads it into feed,
+if not it creates empty local storage file, and self.feed = {empty dict}.

@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./AndreiPratasevich/rss_reader/rss_reader"
+    ]
+}
